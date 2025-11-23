@@ -1,4 +1,4 @@
-// Axios instance dengan interceptors
+
 import axios from 'axios';
 import { API_CONFIG } from './config';
 
@@ -26,6 +26,7 @@ apiService.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+      console.log('Unauthorized! Redirecting to login.');
     }
     return Promise.reject(error);
   }

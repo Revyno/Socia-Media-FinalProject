@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { postApi } from '@/api/postApi';
+import { postApi } from '../api/postApi';
 
 export function usePosts(type = 'explore') {
   const [posts, setPosts] = useState([]);

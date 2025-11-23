@@ -1,4 +1,4 @@
-import apiService from '../apiService';
+import apiService from './apiService';
 
 export const userApi = {
   getCurrentUser: () => apiService.get('/api/v1/user'),

@@ -1,6 +1,6 @@
 import { ImageIcon, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import CreatePostDialog from '@/components/post/CreatePostDialog';
+// import CreatePostDialog from '@/components/post/CreatePostDialog';
 
 export default function Header() {
   return (
@@ -12,7 +12,7 @@ export default function Header() {
           </div>
           <h1 className="text-2xl font-bold text-white">Galleria</h1>
         </div>
-        <CreatePostDialog />
+        {/* <CreatePostDialog /> */}
         <Button variant="outline">
           <Upload className="w-4 h-4 mr-2" />
           Upload
