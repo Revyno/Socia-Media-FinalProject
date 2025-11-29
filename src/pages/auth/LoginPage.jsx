@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    console.log('Login data:', formData);
     setError('');
     
     // Validation
@@ -32,6 +33,7 @@ export default function LoginPage() {
 
     try {
       const result = await login(formData.email, formData.password);
+      console.log('Login result:', result);
 
       if (result.success) {
         navigate('/');
@@ -39,8 +41,8 @@ export default function LoginPage() {
         setError(result.message || 'Login failed. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
-      console.error(err);
+      setError('Username Or Password is incorrect.');
+      console.log('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -53,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-neutral-900/80 backdrop-blur-xl border-neutral-800 shadow-2xl">
         <CardContent className="p-8">
           {/* Header */}
@@ -62,7 +64,7 @@ export default function LoginPage() {
               <ImageIcon className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-neutral-400">Sign in to continue to Galleria</p>
+            <p className="text-neutral-400">Sign in to continue to Social media</p>
           </div>
 
           {/* Error Alert */}

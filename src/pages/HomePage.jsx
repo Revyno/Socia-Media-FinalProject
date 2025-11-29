@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { postApi } from '@/api/postApi';
+// import { useEffect } from 'react';
+import { usePosts } from '@/hooks/usePosts';
 import PostCard from '@/components/post/PostCard';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import EmptyState from '@/components/common/EmptyState';
@@ -8,59 +7,62 @@ import ErrorMessage from '@/components/common/ErrorMessage';
 import { ImageIcon } from 'lucide-react';
 
 export default function HomePage() {
-  const { token } = useAuth();
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    posts, 
+    loading, 
+    error, 
+    refreshPosts,
+    toggleLike,
+    deletePost,
+    hasMore,
+    loadMorePosts
+  } = usePosts();
 
-  const fetchPosts = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await postApi.getExplorePosts({ size: 20 });
-      if (response.data?.data) {
-        setPosts(response.data.data);
-      }
-    } catch (err) {
-      console.error('Error fetching posts:', err);
-      setError('Failed to load posts. Please try again.');
-    } finally {
-      setLoading(false);
+  const handleLike = async (postId, isLiked) => {
+    const result = await toggleLike(postId, isLiked);
+    if (!result.success) {
+      alert('Failed to like post');
     }
   };
 
-  useEffect(() => {
-    fetchPosts();
-  }, [token]);
-
-  const handlePostUpdate = (updatedPost) => {
-    setPosts(posts.map(post => post.id === updatedPost.id ? updatedPost : post));
+  const handleDelete = async (postId) => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      const result = await deletePost(postId);
+      if (result.success) {
+        alert('Post deleted successfully!');
+      } else {
+        alert(result.message || 'Failed to delete post');
+      }
+    }
   };
 
-  const handlePostDelete = (postId) => {
-    setPosts(posts.filter(post => post.id !== postId));
-  };
+  const safePosts = Array.isArray(posts) ? posts : [];
 
-  if (loading) {
-    return <LoadingSpinner />;
+  if (loading && safePosts.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto py-8 px-4">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div className="max-w-2xl mx-auto py-8 px-4">
-        <ErrorMessage message={error} onRetry={fetchPosts} />
+        <ErrorMessage message={error} onRetry={refreshPosts} />
       </div>
     );
   }
 
-  if (posts.length === 0) {
+  if (safePosts.length === 0) {
     return (
       <div className="max-w-2xl mx-auto py-8 px-4">
         <EmptyState
           icon={ImageIcon}
           title="No posts yet"
           description="Be the first to share a photo!"
+          actionLabel="Refresh"
+          onAction={refreshPosts}
         />
       </div>
     );
@@ -69,14 +71,27 @@ export default function HomePage() {
   return (
     <div className="max-w-2xl mx-auto py-6 px-4">
       <div className="space-y-6">
-        {posts.map(post => (
+        {safePosts.map(post => (
           <PostCard
             key={post.id}
             post={post}
-            onUpdate={handlePostUpdate}
-            onDelete={handlePostDelete}
+            onLike={() => handleLike(post.id, post.isLike)}
+            onDelete={() => handleDelete(post.id)}
           />
         ))}
+        
+        {/* Optional: Load More button */}
+        {hasMore && (
+          <div className="flex justify-center pt-4">
+            <button
+              onClick={loadMorePosts}
+              disabled={loading}
+              className="px-6 py-2 bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50"
+            >
+              {loading ? 'Loading...' : 'Load More'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

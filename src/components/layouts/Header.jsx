@@ -10,7 +10,7 @@ export default function Header() {
           <div className="p-2 bg-white rounded-lg">
             <ImageIcon className="w-6 h-6 text-neutral-900" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Galleria</h1>
+          <h1 className="text-2xl font-bold text-white">Social Media</h1>
         </div>
         {/* <CreatePostDialog /> */}
         <Button variant="outline">

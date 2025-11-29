@@ -90,7 +90,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-neutral-900/80 backdrop-blur-xl border-neutral-800 shadow-2xl">
         <CardContent className="p-8">
           {/* Header */}

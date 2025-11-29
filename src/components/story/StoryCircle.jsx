@@ -15,7 +15,7 @@ export default function StoryCircle({ story, isAddStory = false, onClick }) {
 
   return (
     <button onClick={onClick} className="flex flex-col items-center gap-2">
-      <div className="p-0.5 bg-gradient-to-tr from-yellow-400 to-pink-600 rounded-full">
+      <div className="p-0.5 from-yellow-400 to-pink-600 rounded-full">
         <div className="p-0.5 bg-neutral-900 rounded-full">
           <Avatar className="w-14 h-14">
             <AvatarImage src={story.user?.profilePictureUrl} />
