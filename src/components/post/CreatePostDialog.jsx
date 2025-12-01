@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // import { useAuth } from '@/hooks/useAuth';
-import { postApi } from '@/api/endpoints/postApi';
+import { postApi } from '@/api/postApi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

@@ -1,4 +1,5 @@
-// import { useEffect } from 'react';
+// import { useEffect,useState } from 'react';
+// import { postApi } from '@/api/postApi';
 import { usePosts } from '@/hooks/usePosts';
 import PostCard from '@/components/post/PostCard';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -17,7 +18,26 @@ export default function HomePage() {
     hasMore,
     loadMorePosts
   } = usePosts();
+  // const [myPosts, setMyPosts] = useState([]);
 
+
+  // Fetch posts on mount
+  // useEffect(() => {
+  //   refreshPosts();
+  // }, [refreshPosts]);
+
+  // try {
+  //     const response = async postApi.getExplorePosts({ size: 20 });
+  //     if (response.data?.data) {
+  //       setPosts(response.data.data);
+  //     }
+  //   } catch (err) {
+  //     console.error('Error fetching posts:', err);
+  //     setError('Failed to load posts. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  
   const handleLike = async (postId, isLiked) => {
     const result = await toggleLike(postId, isLiked);
     if (!result.success) {

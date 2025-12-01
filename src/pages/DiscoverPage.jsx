@@ -1,3 +1,4 @@
+// discoverpage.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { postApi } from '../api/postApi';
@@ -31,13 +32,26 @@ export default function DiscoverPage() {
 
   const fetchPosts = async () => {
     try {
-      const response = await postApi.getExplorePosts({ size: 50 });
-      if (response.data?.data) {
-        setPosts(response.data.data);
-        setFilteredPosts(response.data.data);
+      setLoading(true);
+      const response = await postApi.getExplorePosts({ size: 10, page: 1 });
+      console.log('getExplorePosts response:', response);
+      let postsData = [];
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        postsData = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        postsData = response.data;
+      } else if (Array.isArray(response)) { 
+        postsData = response;
       }
+      
+      console.log('Fetched posts:', postsData); // Debug log
+      
+      setPosts(postsData);
+      setFilteredPosts(postsData);
     } catch (err) {
       console.error('Error fetching posts:', err);
+      setPosts([]);
+      setFilteredPosts([]);
     } finally {
       setLoading(false);
     }
@@ -51,9 +65,9 @@ export default function DiscoverPage() {
 
     const query = debouncedSearch.toLowerCase();
     const filtered = posts.filter(post =>
-      post.caption?.toLowerCase().includes(query) ||
-      post.user?.name?.toLowerCase().includes(query) ||
-      post.user?.username?.toLowerCase().includes(query)
+      post?.caption?.toLowerCase().includes(query) ||
+      post?.user?.name?.toLowerCase().includes(query) ||
+      post?.user?.username?.toLowerCase().includes(query)
     );
     setFilteredPosts(filtered);
   };
@@ -87,10 +101,13 @@ export default function DiscoverPage() {
           <EmptyState
             icon={SearchIcon}
             title="No results found"
-            description={`No posts match "${searchQuery}"`}
+            description={searchQuery ? `No posts match "${searchQuery}"` : "No posts available"}
           />
         ) : (
-          <PostGrid posts={filteredPosts} onPostClick={setSelectedPost} />
+          <PostGrid 
+            posts={filteredPosts} 
+            onPostClick={setSelectedPost} 
+          />
         )}
 
         {/* Post Detail Modal */}

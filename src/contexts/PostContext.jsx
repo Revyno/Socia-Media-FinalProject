@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 export const PostContext = createContext(null);
 
 export function PostProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const {  isAuthenticated } = useAuth();
   
   // State
   const [posts, setPosts] = useState([]);
@@ -16,28 +16,26 @@ export function PostProvider({ children }) {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
-  /**
-   * Fetch explore posts (posts from all users)
-   */
-  const fetchExplorePosts = useCallback(async (pageNum = 1, size = 20) => {
+ 
+  const fetchExplorePosts = useCallback(async (page = 1, size = 10) => {
     if (!isAuthenticated) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await postApi.getExplorePosts({ page: pageNum, size });
+      const response = await postApi.getExplorePosts({ page: page, size });
       
       if (response.data?.data) {
-        if (pageNum === 1) {
+        if (page === 1) {
           setPosts(response.data.data);
         } else {
           setPosts(prev => [...prev, ...response.data.data]);
         }
         
-        
+        // Check if there are more posts
         setHasMore(response.data.data.length === size);
-        setPage(pageNum);
+        setPage(page);
       }
     } catch (err) {
       console.error('Error fetching explore posts:', err);
@@ -48,19 +46,19 @@ export function PostProvider({ children }) {
   }, [isAuthenticated]);
 
   /**
-   * Fetch my posts (posts from users I follow)
+   * Fetch my posts (current user's posts)
    */
-  const fetchMyPosts = useCallback(async (pageNum = 1, size = 50) => {
+  const fetchMyPosts = useCallback(async (page = 1, size = 10) => {
     if (!isAuthenticated) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await postApi.getMyPosts({ page: pageNum, size });
+      const response = await postApi.getMyPosts({ page: page, size });
       
       if (response.data?.data) {
-        if (pageNum === 1) {
+        if (page === 1) {
           setMyPosts(response.data.data);
         } else {
           setMyPosts(prev => [...prev, ...response.data.data]);
@@ -69,38 +67,6 @@ export function PostProvider({ children }) {
     } catch (err) {
       console.error('Error fetching my posts:', err);
       setError('Failed to load your posts');
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated]);
-
-  /**
-   * Fetch posts by user ID
-   */
-  const fetchPostsByUserId = useCallback(async (userId, pageNum = 1, size = 50) => {
-    if (!isAuthenticated) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await postApi.getPostsByUserId(userId, { page: pageNum, size });
-      
-      if (response.data?.data) {
-        return { 
-          success: true, 
-          data: response.data.data,
-          pagination: response.data.pagination 
-        };
-      }
-      
-      return { success: false, message: 'No posts found' };
-    } catch (err) {
-      console.error('Error fetching user posts:', err);
-      return { 
-        success: false, 
-        message: err.response?.data?.message || 'Failed to fetch user posts' 
-      };
     } finally {
       setLoading(false);
     }
@@ -279,13 +245,6 @@ export function PostProvider({ children }) {
   }, [fetchMyPosts]);
 
   /**
-   * Refresh user posts by ID
-   */
-  const refreshUserPosts = useCallback((userId) => {
-    return fetchPostsByUserId(userId, 1);
-  }, [fetchPostsByUserId]);
-
-  /**
    * Clear all posts
    */
   const clearPosts = useCallback(() => {
@@ -318,7 +277,6 @@ export function PostProvider({ children }) {
     // Actions
     fetchExplorePosts,
     fetchMyPosts,
-    fetchPostsByUserId,
     createPost,
     updatePost,
     deletePost,
@@ -327,7 +285,6 @@ export function PostProvider({ children }) {
     loadMorePosts,
     refreshPosts,
     refreshMyPosts,
-    refreshUserPosts,
     clearPosts,
   };
 

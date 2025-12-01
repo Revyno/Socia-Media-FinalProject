@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import { postApi } from '@/api/endpoints/postApi';
+import { postApi } from '@/api/postApi';
 
 export default function DeletePostDialog({ open, onOpenChange, postId, onSuccess }) {
   const [loading, setLoading] = useState(false);

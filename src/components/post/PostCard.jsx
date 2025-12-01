@@ -35,5 +35,6 @@ export default function PostCard({ post }) {
         {post.caption && <p className="text-white">{post.caption}</p>}
       </div>
     </Card>
+    
   );
 }

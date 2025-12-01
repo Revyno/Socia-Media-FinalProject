@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { postApi } from '@/api/endpoints/postApi';
+import { postApi } from '@/api/postApi';
 
 export default function EditPostDialog({ open, onOpenChange, post, onSuccess }) {
   const [caption, setCaption] = useState(post?.caption || '');

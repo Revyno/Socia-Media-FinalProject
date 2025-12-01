@@ -1,223 +1,147 @@
 import { userApi } from '@/api/userApi';
 import { followApi } from '@/api/followApi';
-import { handleApiError } from '@/utils/errorHandler';
+import { postApi } from '@/api/postApi';
 
 export const userService = {
-  /**
-   * Get current logged in user profile
-   */
-  getCurrentUser: async () => {
+  // Get current user
+  async getCurrentUser() {
     try {
       const response = await userApi.getCurrentUser();
       return {
         success: true,
-        data: response.data.data,
+        data: response.data?.data || response.data,
+        message: 'User data fetched successfully'
       };
     } catch (error) {
-      const errorData = handleApiError(error);
+      console.error('Error fetching current user:', error);
       return {
         success: false,
-        message: errorData.message,
+        message: error.response?.data?.message || 'Failed to fetch user data',
+        data: null
       };
     }
   },
 
-  /**
-   * Get user by ID
-   */
-  getUserById: async (userId) => {
+  // Get user by ID
+  async getUserById(userId) {
     try {
       const response = await userApi.getUserById(userId);
       return {
         success: true,
-        data: response.data.data,
+        data: response.data?.data || response.data,
+        message: 'User data fetched successfully'
       };
     } catch (error) {
-      const errorData = handleApiError(error);
+      console.error('Error fetching user by ID:', error);
       return {
         success: false,
-        message: errorData.message,
+        message: error.response?.data?.message || 'Failed to fetch user data',
+        data: null
       };
     }
   },
 
-  /**
-   * Update user profile
-   */
-  updateProfile: async (userData) => {
+  // Update user profile
+  async updateProfile(userData) {
     try {
       const response = await userApi.updateProfile(userData);
       return {
         success: true,
-        data: response.data.data,
-        message: 'Profile updated successfully',
+        data: response.data?.data || response.data,
+        message: 'Profile updated successfully'
       };
     } catch (error) {
-      const errorData = handleApiError(error);
+      console.error('Error updating profile:', error);
       return {
         success: false,
-        message: errorData.message || 'Failed to update profile',
+        message: error.response?.data?.message || 'Failed to update profile',
+        data: null
       };
     }
   },
 
-  /**
-   * Get user's followers
-   */
-  getFollowers: async (userId = null, page = 1, size = 100) => {
+  // Get user followers
+  async getFollowers(userId) {
     try {
-      let response;
-      if (userId) {
-        response = await followApi.getFollowersByUserId(userId, { page, size });
-      } else {
-        response = await followApi.getMyFollowers({ page, size });
-      }
-      
+      const response = await followApi.getFollowersByUserId(userId, { size: 100 });
       return {
         success: true,
-        data: response.data.data || [],
-        pagination: response.data.pagination,
+        data: response.data?.data || [],
+        message: 'Followers fetched successfully'
       };
     } catch (error) {
-      const errorData = handleApiError(error);
+      console.error('Error fetching followers:', error);
       return {
         success: false,
-        message: errorData.message,
-        data: [],
+        message: error.response?.data?.message || 'Failed to fetch followers',
+        data: []
       };
     }
   },
 
-  /**
-   * Get user's following
-   */
-  getFollowing: async (userId = null, page = 1, size = 100) => {
+  // Get user following
+  async getFollowing(userId) {
     try {
-      let response;
-      if (userId) {
-        response = await followApi.getFollowingByUserId(userId, { page, size });
-      } else {
-        response = await followApi.getMyFollowing({ page, size });
-      }
-      
+      const response = await followApi.getFollowingByUserId(userId, { size: 100 });
       return {
         success: true,
-        data: response.data.data || [],
-        pagination: response.data.pagination,
+        data: response.data?.data || [],
+        message: 'Following fetched successfully'
       };
     } catch (error) {
-      const errorData = handleApiError(error);
+      console.error('Error fetching following:', error);
       return {
         success: false,
-        message: errorData.message,
-        data: [],
+        message: error.response?.data?.message || 'Failed to fetch following',
+        data: []
       };
     }
   },
 
-  /**
-   * Follow a user
-   */
-  followUser: async (userId) => {
+  // Get user stats
+  async getUserStats(userId) {
     try {
-      const response = await followApi.followUser(userId);
-      return {
-        success: true,
-        data: response.data.data,
-        message: 'User followed successfully',
-      };
-    } catch (error) {
-      const errorData = handleApiError(error);
-      return {
-        success: false,
-        message: errorData.message || 'Failed to follow user',
-      };
-    }
-  },
-
-  /**
-   * Unfollow a user
-   */
-  unfollowUser: async (userId) => {
-    try {
-      const response = await followApi.unfollowUser(userId);
-      return {
-        success: true,
-        data: response.data.data,
-        message: 'User unfollowed successfully',
-      };
-    } catch (error) {
-      const errorData = handleApiError(error);
-      return {
-        success: false,
-        message: errorData.message || 'Failed to unfollow user',
-      };
-    }
-  },
-
-  /**
-   * Search users by name or username
-   */
-  searchUsers: async (query) => {
-    try {
-      // Note: Implement this if API has search endpoint
-      // For now, we can filter from followers/following
-      const response = await followApi.getMyFollowing({ size: 100 });
-      const users = response.data.data || [];
-      
-      if (!query) return { success: true, data: users };
-      
-      const filtered = users.filter(user => 
-        user.name?.toLowerCase().includes(query.toLowerCase()) ||
-        user.username?.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      return {
-        success: true,
-        data: filtered,
-      };
-    } catch (error) {
-      const errorData = handleApiError(error);
-      return {
-        success: false,
-        message: errorData.message,
-        data: [],
-      };
-    }
-  },
-
-  /**
-   * Get user statistics
-   */
-  getUserStats: async (userId = null) => {
-    try {
-      const [followersRes, followingRes] = await Promise.all([
-        userId 
-          ? followApi.getFollowersByUserId(userId, { size: 1 })
-          : followApi.getMyFollowers({ size: 1 }),
-        userId
-          ? followApi.getFollowingByUserId(userId, { size: 1 })
-          : followApi.getMyFollowing({ size: 1 }),
+      const [followersRes, followingRes, postsRes] = await Promise.all([
+        this.getFollowers(userId),
+        this.getFollowing(userId),
+        postApi.getPostsByUserId(userId, { size: 1 })
       ]);
 
       return {
         success: true,
         data: {
-          followers: followersRes.data.pagination?.total || 0,
-          following: followingRes.data.pagination?.total || 0,
+          followers: followersRes.data?.length || 0,
+          following: followingRes.data?.length || 0,
+          posts: postsRes.data?.data?.totalItems || postsRes.data?.data?.posts?.length || 0
         },
+        message: 'User stats fetched successfully'
       };
     } catch (error) {
+      console.error('Error fetching user stats:', error);
       return {
         success: false,
-        data: {
-          followers: 0,
-          following: 0,
-        },
-        
-        message: 'Failed to fetch user statistics',
-        
+        message: 'Failed to fetch user stats',
+        data: { followers: 0, following: 0, posts: 0 }
       };
     }
   },
+
+  // Search users
+  async searchUsers(query) {
+    try {
+      const response = await userApi.searchUsers(query, { size: 20 });
+      return {
+        success: true,
+        data: response.data?.data || [],
+        message: 'Users search completed'
+      };
+    } catch (error) {
+      console.error('Error searching users:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to search users',
+        data: []
+      };
+    }
+  }
 };

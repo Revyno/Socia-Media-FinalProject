@@ -55,6 +55,7 @@ export function useUser(userId = null) {
     } catch (err) {
       const message = 'Failed to update user';
       setError(message);
+      console.error('useUser updateUser error:', err);
       return { success: false, message };
 
     } finally {

@@ -1,3 +1,4 @@
+// CollectionsPage.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { postApi } from '@/api/postApi';
@@ -9,36 +10,95 @@ import EmptyState from '@/components/common/EmptyState';
 import { ImageIcon, Heart, Bookmark } from 'lucide-react';
 
 export default function CollectionsPage() {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const [myPosts, setMyPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchMyPosts();
-  }, [token]);
+    if (user) {
+      fetchMyPosts();
+    }
+  }, [user, token]);
 
   const fetchMyPosts = async () => {
     try {
-      const response = await postApi.getMyPosts({ size: 100 });
-      if (response.data?.data) {
-        setMyPosts(response.data.data);
+      const userId = user?.id;
+      
+      if (!userId) {
+        console.error('User ID not found');
+        setMyPosts([]);
+        setLoading(false);
+        return;
       }
+
+      console.log('Fetching posts for user:', userId);
+      
+      // Coba getMyPosts terlebih dahulu (fungsi yang tersedia)
+      try {
+        const response = await postApi.getMyPosts({ size: 10, page: 1 });
+        console.log('getMyPosts response:', response);
+        
+        // Handle berbagai struktur response dengan lebih robust
+        let postsData = [];
+        
+        if (response.data?.data && Array.isArray(response.data.data)) {
+          postsData = response.data.data;
+        } else if (response.data?.posts && Array.isArray(response.data.posts)) {
+          postsData = response.data.posts;
+        } else if (Array.isArray(response.data)) {
+          postsData = response.data;
+        } else if (response.data && typeof response.data === 'object') {
+          // Coba ekstrak array dari object
+          const possibleArrays = Object.values(response.data).find(val => Array.isArray(val));
+          if (possibleArrays) {
+            postsData = possibleArrays;
+          }
+        }
+        
+        console.log('Extracted posts data:', postsData);
+        setMyPosts(Array.isArray(postsData) ? postsData : []);
+        
+      } catch (myPostsError) {
+        console.log('getMyPosts failed, trying getExplorePosts:', myPostsError);
+        
+        // Fallback ke getExplorePosts
+        try {
+          const exploreResponse = await postApi.getExplorePosts({ size: 10, page: 1 });
+          console.log('Explore posts response:', exploreResponse);
+          
+          let exploreData = [];
+          if (exploreResponse.data?.data && Array.isArray(exploreResponse.data.data)) {
+            exploreData = exploreResponse.data.data;
+          } else if (Array.isArray(exploreResponse.data)) {
+            exploreData = exploreResponse.data;
+          }
+          
+          setMyPosts(Array.isArray(exploreData) ? exploreData : []);
+        } catch (exploreError) {
+          console.error('Explore posts also failed:', exploreError);
+          setMyPosts([]);
+        }
+      }
+      
     } catch (err) {
-      console.error('Error fetching posts:', err);
+      console.error('All post fetching methods failed:', err);
+      setMyPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const likedPosts = myPosts.filter(post => post.isLike);
+  // Pastikan myPosts selalu array sebelum di-filter
+  const safeMyPosts = Array.isArray(myPosts) ? myPosts : [];
+  const likedPosts = safeMyPosts.filter(post => post && post.isLike);
 
   const categories = [
     {
       id: 'all',
       name: 'All Photos',
-      count: myPosts.length,
-      image: myPosts[0]?.imageUrl,
+      count: safeMyPosts.length,
+      image: safeMyPosts[0]?.imageUrl,
       icon: ImageIcon,
     },
     {
@@ -96,7 +156,7 @@ export default function CollectionsPage() {
         </div>
 
         {/* All Photos Grid */}
-        {myPosts.length === 0 ? (
+        {safeMyPosts.length === 0 ? (
           <EmptyState
             icon={ImageIcon}
             title="No photos yet"
@@ -105,7 +165,7 @@ export default function CollectionsPage() {
         ) : (
           <div>
             <h3 className="text-xl font-semibold text-white mb-4">All My Photos</h3>
-            <PostGrid posts={myPosts} onPostClick={setSelectedPost} />
+            <PostGrid posts={safeMyPosts} onPostClick={setSelectedPost} />
           </div>
         )}
 

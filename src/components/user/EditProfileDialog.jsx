@@ -75,9 +75,11 @@ export default function EditProfileDialog({ open, onOpenChange }) {
             placeholder="Bio"
             className="bg-neutral-800 border-neutral-700 text-white"
           />
-          <Button onClick={handleUpdate} disabled={loading} className="w-full">
+          <div className="bg-white/10 p-1 rounded-lg">
+          <Button onClick={handleUpdate} disabled={loading} className="w-full text-white ">
             {loading ? 'Updating...' : 'Update Profile'}
           </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

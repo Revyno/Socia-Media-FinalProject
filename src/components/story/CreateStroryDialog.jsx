@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { storyApi } from '@/api/endpoints/storyApi';
+import { storyApi } from '@/api/storyApi';
 
 export default function CreateStoryDialog({ open, onOpenChange, onSuccess }) {
   const [imageUrl, setImageUrl] = useState('');
