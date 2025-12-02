@@ -1,4 +1,4 @@
-// ProfilePage.jsx
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { postApi } from '@/api/postApi';

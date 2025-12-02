@@ -1,14 +1,14 @@
 import { TrendingUp } from 'lucide-react';
-
-export default function TrendingTags() {
+import { TRENDING_TAGS } from '@/utils/constants';
+export default function TrendingTags(TrendingTags) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-neutral-400" />
         <h3 className="text-lg font-semibold text-white">Trending Tags</h3>
       </div>
-      {/* <div className="flex flex-wrap gap-2">
-        {tags.map(tag => (
+      <div className="flex flex-wrap gap-2">
+        {TRENDING_TAGS.map(tag => (
           <button
             key={tag}
             onClick={() => onTagClick?.(tag)}
@@ -17,7 +17,7 @@ export default function TrendingTags() {
             {tag}
           </button>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }

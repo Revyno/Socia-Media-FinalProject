@@ -143,8 +143,8 @@ export default function LoginPage() {
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700">
             <p className="text-xs text-neutral-400 mb-2">Demo Account:</p>
-            <p className="text-xs text-neutral-300">Email: demo@example.com</p>
-            <p className="text-xs text-neutral-300">Password: demo123</p>
+            <p className="text-xs text-neutral-300">Email: vihe@gmail.com</p>
+            <p className="text-xs text-neutral-300">Password: qwerty123</p>
           </div>
         </CardContent>
       </Card>
