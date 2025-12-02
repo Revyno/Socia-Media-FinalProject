@@ -19,7 +19,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
     setError('');
     
     // Validation
@@ -31,29 +32,30 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await login(formData.email, formData.password);
+      const result = await login(formData);
 
       if (result.success) {
         navigate('/');
       } else {
         setError(result.message || 'Login failed. Please try again.');
+        setLoading(false);
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.response?.data?.message || 'Network error. Please try again.');
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSubmit();
+      e.preventDefault();
+      handleSubmit(e);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-neutral-900/80 backdrop-blur-xl border-neutral-800 shadow-2xl">
         <CardContent className="p-8">
           {/* Header */}
@@ -73,7 +75,7 @@ export default function LoginPage() {
           )}
 
           {/* Form */}
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm text-neutral-400 flex items-center gap-2">
                 <Mail className="w-4 h-4" /> Email
@@ -86,6 +88,7 @@ export default function LoginPage() {
                 onKeyPress={handleKeyPress}
                 className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-neutral-600"
                 autoComplete="email"
+                disabled={loading}
               />
             </div>
 
@@ -102,11 +105,13 @@ export default function LoginPage() {
                   onKeyPress={handleKeyPress}
                   className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-neutral-600 pr-10"
                   autoComplete="current-password"
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-white"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -114,13 +119,13 @@ export default function LoginPage() {
             </div>
 
             <Button
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
-              className="w-full bg-white text-neutral-900 hover:bg-neutral-100 font-medium py-6 text-base"
+              className="w-full bg-white text-neutral-900 hover:bg-neutral-100 font-medium py-6 text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
-          </div>
+          </form>
 
           {/* Footer */}
           <div className="mt-6 text-center space-y-2">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { postApi } from '../api/postApi';
 import { useDebounce } from '../hooks/useDebounce';
@@ -27,7 +27,7 @@ export default function DiscoverPage() {
 
   useEffect(() => {
     filterPosts();
-  }, [debouncedSearch, posts]);
+  }, [filterPosts]);
 
   const fetchPosts = async () => {
     try {
@@ -43,7 +43,7 @@ export default function DiscoverPage() {
     }
   };
 
-  const filterPosts = () => {
+  const filterPosts = useCallback(() => {
     if (!debouncedSearch) {
       setFilteredPosts(posts);
       return;
@@ -56,7 +56,7 @@ export default function DiscoverPage() {
       post.user?.username?.toLowerCase().includes(query)
     );
     setFilteredPosts(filtered);
-  };
+  },[debouncedSearch, posts]);
 
   const handleTagClick = (tag) => {
     setSearchQuery(tag);

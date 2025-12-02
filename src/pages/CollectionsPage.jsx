@@ -82,7 +82,7 @@ export default function CollectionsPage() {
                     <category.icon className="w-12 h-12 text-neutral-600" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute inset-0 from-black/80 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <category.icon className="w-5 h-5 text-white" />
